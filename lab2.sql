@@ -1,4 +1,3 @@
--- 1. Create DEPARTMENT table first (so Employees can be assigned to one)
 CREATE TABLE DEPARTMENT (
     Dname VARCHAR(25) NOT NULL,
     Dnumber INT NOT NULL PRIMARY KEY,
@@ -6,7 +5,6 @@ CREATE TABLE DEPARTMENT (
     Mgr_start_date DATE
 );
 
--- 2. Create EMPLOYEE table
 CREATE TABLE EMPLOYEE (
     Fname VARCHAR(15) NOT NULL,
     Minit CHAR(1),
@@ -21,7 +19,6 @@ CREATE TABLE EMPLOYEE (
     FOREIGN KEY (Dno) REFERENCES DEPARTMENT(Dnumber)
 );
 
--- 3. Create PROJECT table
 CREATE TABLE PROJECT (
     Pname VARCHAR(25) NOT NULL,
     Pnumber INT NOT NULL PRIMARY KEY,
@@ -30,7 +27,6 @@ CREATE TABLE PROJECT (
     FOREIGN KEY (Dnum) REFERENCES DEPARTMENT(Dnumber)
 );
 
--- 4. Create WORKS_ON table (Links Employees and Projects)
 CREATE TABLE WORKS_ON (
     Essn CHAR(9) NOT NULL,
     Pno INT NOT NULL,
@@ -40,7 +36,6 @@ CREATE TABLE WORKS_ON (
     FOREIGN KEY (Pno) REFERENCES PROJECT(Pnumber)
 );
 
- -- Random operation 
 INSERT INTO DEPARTMENT VALUES ('Research', 5, '333445555', '1988-05-22');
 INSERT INTO DEPARTMENT VALUES ('Administration', 4, '987654321', '1995-01-01');
 INSERT INTO DEPARTMENT VALUES ('Headquarters', 1, '888665555', '1981-06-19');
