@@ -1,3 +1,6 @@
+CREATE DATABASE LAB2 IF NOT EXISTS;
+USE LAB2;
+
 CREATE TABLE DEPARTMENT (
     Dname VARCHAR(25) NOT NULL,
     Dnumber INT NOT NULL PRIMARY KEY,
@@ -43,4 +46,14 @@ INSERT INTO DEPARTMENT VALUES ('Headquarters', 1, '888665555', '1981-06-19');
 INSERT INTO PROJECT VALUES ('ProductX', 10, 'Stafford', 4);
 INSERT INTO PROJECT VALUES ('ProductY', 20, 'Houston', 5);
 
-INSERT INTO EMPLOYEE VALUES ('John', 'B', 'Brown', '123456789', '1965-01-09', '731 Fondren, Houston, TX', 'M', 30000, NULL, 5);
+UPDATE PROJECT
+SET Plocation = 'Bellaire', Dnum = 5
+WHERE Pnumber = 10;
+
+-- Example U6: Give all employees in Dept 5 ('Research') a 10% raise
+UPDATE EMPLOYEE
+SET Salary = Salary * 1.1
+WHERE Dno = 5;
+
+DELETE FROM EMPLOYEE
+WHERE Lname = 'Brown';
