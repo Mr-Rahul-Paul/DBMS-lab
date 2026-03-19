@@ -1,7 +1,48 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\title{\textbf{Lab 5.5: Remaining 10 SQL Queries}}
+\author{Name: [Your Name Here] \\ ID: [Your ID Here]}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Queries 31 to 40}
+
+\begin{lstlisting}[language=SQL, caption=Lab 5 Additional Queries]
 USE MedicalShopDB;
 
-
-
+-- 31. DDL: Create Prescription Table
 CREATE TABLE IF NOT EXISTS Prescription (
     prescription_id INT PRIMARY KEY AUTO_INCREMENT,
     customer_id     INT NOT NULL,
@@ -12,34 +53,39 @@ CREATE TABLE IF NOT EXISTS Prescription (
     FOREIGN KEY (medicine_id) REFERENCES Medicine(medicine_id) ON DELETE CASCADE
 );
 
+-- 32. DML: Insert into Prescription
 INSERT INTO Prescription (customer_id, medicine_id, prescribed_on, dosage) VALUES
 (1, 1, '2023-09-15', 'Twice a day after meals'),
 (2, 2, '2023-10-01', 'Once at night'),
 (3, 1, '2023-10-10', 'Thrice a day');
 
+-- 33. DQL: INNER JOIN across three tables
 SELECT
     p.prescription_id,
-    c.name          AS customer_name,
-    m.type          AS medicine_type,
+    c.name AS customer_name,
+    m.type AS medicine_type,
     p.prescribed_on,
     p.dosage
 FROM Prescription p
 JOIN Customer c ON p.customer_id = c.customer_id
 JOIN Medicine m ON p.medicine_id = m.medicine_id;
 
+-- 34. DQL: WHERE with BETWEEN and LIKE
 SELECT name, cp, sp, expiry
 FROM Shop_Inventory
 WHERE sp BETWEEN 10 AND 50
   AND name LIKE 'C%';
 
+-- 35. DQL: GROUP BY with aggregate functions
 SELECT
-    m.type                      AS medicine_type,
-    SUM(si.qty)                 AS total_qty,
-    ROUND(AVG(si.sp), 2)        AS avg_selling_price
+    m.type AS medicine_type,
+    SUM(si.qty) AS total_qty,
+    ROUND(AVG(si.sp), 2) AS avg_selling_price
 FROM Shop_Inventory si
 JOIN Medicine m ON si.medicine_id = m.medicine_id
 GROUP BY m.type;
 
+-- 36. DQL: HAVING filter after aggregation
 SELECT
     payment_method,
     SUM(past_orders) AS total_orders
@@ -47,6 +93,7 @@ FROM Customer
 GROUP BY payment_method
 HAVING total_orders > 4;
 
+-- 37. DQL: Subquery to find medicines stocked by wholeseller in bulk
 SELECT name, qty, sp
 FROM Shop_Inventory
 WHERE medicine_id IN (
@@ -55,28 +102,31 @@ WHERE medicine_id IN (
     WHERE qty > 1000
 );
 
+-- 38. DML: Update selling price for low-margin items
 UPDATE Shop_Inventory
 SET sp = ROUND(sp * 1.10, 2)
 WHERE (sp - cp) / cp < 0.50;
 
+-- 39. View: Create Medicine Profit View
 CREATE OR REPLACE VIEW Medicine_Profit_View AS
 SELECT
     si.name,
     si.qty,
     si.cp,
     si.sp,
-    ROUND((si.sp - si.cp), 2)           AS unit_profit,
-    ROUND((si.sp - si.cp) * si.qty, 2)  AS total_profit
+    ROUND((si.sp - si.cp), 2) AS unit_profit,
+    ROUND((si.sp - si.cp) * si.qty, 2) AS total_profit
 FROM Shop_Inventory si;
 
 SELECT * FROM Medicine_Profit_View ORDER BY total_profit DESC;
 
+-- 40. Trigger: Log when a bill status changes to Paid
 CREATE TABLE IF NOT EXISTS Bill_Audit (
-    audit_id    INT PRIMARY KEY AUTO_INCREMENT,
-    bill_id     INT,
+    audit_id INT PRIMARY KEY AUTO_INCREMENT,
+    bill_id INT,
     customer_id INT,
-    paid_on     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    amount      DECIMAL(10,2)
+    paid_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    amount DECIMAL(10,2)
 );
 
 DELIMITER //
@@ -93,3 +143,6 @@ DELIMITER ;
 
 UPDATE Bills SET status = 'Paid' WHERE bill_id = 2;
 SELECT * FROM Bill_Audit;
+\end{lstlisting}
+
+\end{document}
