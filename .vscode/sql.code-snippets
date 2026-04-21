@@ -1,0 +1,160 @@
+{
+    "Create Database & Use (DDL)": {
+        "scope": "sql",
+        "prefix": "sql-ddl-database",
+        "body": [
+            "CREATE DATABASE IF NOT EXISTS ${1:DatabaseName};",
+            "USE ${1:DatabaseName};"
+        ],
+        "description": "Create and select a database"
+    },
+    "Drop Database (DDL)": {
+        "scope": "sql",
+        "prefix": "sql-ddl-drop-database",
+        "body": [
+            "DROP DATABASE IF EXISTS ${1:DatabaseName};"
+        ],
+        "description": "Safely drop a database if it exists"
+    },
+    "Create Table (DDL)": {
+        "scope": "sql",
+        "prefix": "sql-ddl-table",
+        "body": [
+            "CREATE TABLE IF NOT EXISTS ${1:TableName} (",
+            "\t${2:id} INT AUTO_INCREMENT,",
+            "\t${3:column1} VARCHAR(50) NOT NULL,",
+            "\t${4:column2} DECIMAL(10, 2) DEFAULT 0.00,",
+            "\t${5:fk_id} INT,",
+            "\tPRIMARY KEY (${2:id}),",
+            "\tFOREIGN KEY (${5:fk_id}) REFERENCES ${6:OtherTable}(${7:id}) ON DELETE CASCADE ON UPDATE CASCADE",
+            ");"
+        ],
+        "description": "Create a new table with Primary Key, Foreign Key, and common data types"
+    },
+    "Alter Table (DDL)": {
+        "scope": "sql",
+        "prefix": "sql-ddl-alter",
+        "body": [
+            "ALTER TABLE ${1:TableName}",
+            "ADD COLUMN ${2:new_column} ${3:VARCHAR(50)},",
+            "ADD CONSTRAINT ${4:chk_name} CHECK (${5:condition});"
+        ],
+        "description": "Alter table to add columns and constraints"
+    },
+    "Insert Data (DML)": {
+        "scope": "sql",
+        "prefix": "sql-dml-insert",
+        "body": [
+            "INSERT INTO ${1:TableName} (${2:column1}, ${3:column2})",
+            "VALUES",
+            "\t('${4:value1}', ${5:value2}),",
+            "\t('${6:value3}', ${7:value4});"
+        ],
+        "description": "Insert multiple rows into a table"
+    },
+    "Update Data (DML)": {
+        "scope": "sql",
+        "prefix": "sql-dml-update",
+        "body": [
+            "UPDATE ${1:TableName}",
+            "SET ${2:column1} = ${3:value1}, ${4:column2} = ${5:value2}",
+            "WHERE ${6:condition};"
+        ],
+        "description": "Update existing rows in a table"
+    },
+    "Delete Data (DML)": {
+        "scope": "sql",
+        "prefix": "sql-dml-delete",
+        "body": [
+            "DELETE FROM ${1:TableName}",
+            "WHERE ${6:condition};"
+        ],
+        "description": "Delete rows from a table"
+    },
+    "Select Query (DQL)": {
+        "scope": "sql",
+        "prefix": "sql-dql-select",
+        "body": [
+            "SELECT ${1:t1.column1}, ${2:t2.column2}",
+            "FROM ${3:Table1} ${4:t1}",
+            "INNER JOIN ${5:Table2} ${6:t2} ON ${4:t1}.${7:id} = ${6:t2}.${8:id}",
+            "WHERE ${9:condition}",
+            "ORDER BY ${10:t1.column1} DESC",
+            "LIMIT ${11:10};"
+        ],
+        "description": "Select query with JOIN, WHERE, ORDER BY, and LIMIT"
+    },
+    "Group By Query (DQL)": {
+        "scope": "sql",
+        "prefix": "sql-dql-groupby",
+        "body": [
+            "SELECT ${1:column1}, COUNT(*) AS total_count, AVG(${2:calc_column}) AS avg_val",
+            "FROM ${3:TableName}",
+            "GROUP BY ${1:column1}",
+            "HAVING AVG(${2:calc_column}) > ${4:0};"
+        ],
+        "description": "Select query with Aggregate functions, GROUP BY, and HAVING"
+    },
+    "Create View": {
+        "scope": "sql",
+        "prefix": "sql-view",
+        "body": [
+            "CREATE OR REPLACE VIEW ${1:ViewName} AS",
+            "SELECT ${2:column1}, ${3:column2}",
+            "FROM ${4:TableName}",
+            "WHERE ${5:condition};"
+        ],
+        "description": "Create or Replace a View"
+    },
+    "Trigger Before (Insert/Update/Delete)": {
+        "scope": "sql",
+        "prefix": "sql-trigger-before",
+        "body": [
+            "DELIMITER $$",
+            "",
+            "CREATE TRIGGER ${1:Before_Trigger_Name}",
+            "BEFORE ${2|INSERT,UPDATE,DELETE|} ON ${3:TableName}",
+            "FOR EACH ROW",
+            "BEGIN",
+            "\t-- Example logic for Validation",
+            "\tIF NEW.${4:column_name} < 0 THEN",
+            "\t\tSIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '${5:Custom error message}';",
+            "\tEND IF;",
+            "END $$",
+            "",
+            "DELIMITER ;"
+        ],
+        "description": "Create a BEFORE trigger with validation logic (Signal SQLSTATE)"
+    },
+    "Trigger After (Logging/Audit)": {
+        "scope": "sql",
+        "prefix": "sql-trigger-after",
+        "body": [
+            "DELIMITER $$",
+            "",
+            "CREATE TRIGGER ${1:After_Trigger_Name}",
+            "AFTER ${2|INSERT,UPDATE,DELETE|} ON ${3:TableName}",
+            "FOR EACH ROW",
+            "BEGIN",
+            "\t-- Logging logic",
+            "\tINSERT INTO ${4:LogTable} (${5:log_col1}, ${6:log_col2})",
+            "\tVALUES (NEW.${7:src_col1}, OLD.${8:src_col2});",
+            "END $$",
+            "",
+            "DELIMITER ;"
+        ],
+        "description": "Create an AFTER trigger for logging or auditing"
+    },
+    "Case Statement": {
+        "scope": "sql",
+        "prefix": "sql-case",
+        "body": [
+            "CASE",
+            "\tWHEN ${1:condition1} THEN '${2:Result1}'",
+            "\tWHEN ${3:condition2} THEN '${4:Result2}'",
+            "\tELSE '${5:DefaultResult}'",
+            "END AS ${6:AliasName}"
+        ],
+        "description": "CASE WHEN THEN ELSE statement for SELECT queries"
+    }
+}

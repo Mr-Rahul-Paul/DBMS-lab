@@ -1,0 +1,151 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{sqlstyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=sqlstyle}
+
+\title{Lab 7: Roommate Expense Splitter}
+\author{Name: Rahul Paul \\ Roll No: 202411078 \\ DBMS Lab-7}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Table Creation}
+\begin{lstlisting}[language=SQL]
+DROP TABLE IF EXISTS expenses;
+DROP TABLE IF EXISTS roommates;
+
+CREATE TABLE roommates (
+    id INT PRIMARY KEY,
+    name VARCHAR(50)
+);
+
+CREATE TABLE expenses (
+    id INT PRIMARY KEY,
+    payer_id INT REFERENCES roommates(id),
+    amount INT,
+    description VARCHAR(100)
+);
+\end{lstlisting}
+
+\section{Sample Data}
+\begin{lstlisting}[language=SQL]
+INSERT INTO roommates (id, name) VALUES
+(1, 'Aarav'),
+(2, 'Diya'),
+(3, 'Kabir'),
+(4, 'Meera');
+
+INSERT INTO expenses (id, payer_id, amount, description) VALUES
+(1, 1, 1800, 'Rent and Groceries'),
+(2, 2, 800, 'Electricity'),
+(3, 3, 1000, 'WiFi and Dinner'),
+(4, 4, 400, 'Cleaning Supplies');
+\end{lstlisting}
+
+\section{Queries and Outputs}
+
+\subsection*{Query A: Show each expense with roommate name}
+\begin{lstlisting}[language=SQL]
+SELECT r.name, e.description, e.amount
+FROM roommates r
+JOIN expenses e ON r.id = e.payer_id;
+\end{lstlisting}
+\textbf{Output A:} Paste output here.
+
+\subsection*{Query B: Show total spent by each roommate}
+\begin{lstlisting}[language=SQL]
+SELECT r.name, SUM(e.amount) AS total_spent
+FROM roommates r
+JOIN expenses e ON r.id = e.payer_id
+GROUP BY r.name;
+\end{lstlisting}
+\textbf{Output B:} Paste output here.
+
+\subsection*{Query C: Show total expense pool and fair share per person}
+\begin{lstlisting}[language=SQL]
+SELECT 
+    SUM(amount) AS total_pool, 
+    SUM(amount) / (SELECT COUNT(*) FROM roommates) AS fair_share 
+FROM expenses;
+\end{lstlisting}
+\textbf{Output C:} Paste output here.
+
+\subsection*{Query D: Show roommates who still need to pay}
+\begin{lstlisting}[language=SQL]
+SELECT 
+    r.name, 
+    SUM(e.amount) AS amount_paid,
+    (SELECT SUM(amount)/COUNT(*) FROM roommates) - SUM(e.amount) AS amount_to_pay
+FROM roommates r
+JOIN expenses e ON r.id = e.payer_id
+GROUP BY r.name
+HAVING SUM(e.amount) < (SELECT SUM(amount)/COUNT(*) FROM roommates);
+\end{lstlisting}
+\textbf{Output D:} Paste output here.
+
+\subsection*{Query E: Show expenses greater than 500}
+\begin{lstlisting}[language=SQL]
+SELECT r.name, e.description, e.amount
+FROM roommates r
+JOIN expenses e ON r.id = e.payer_id
+WHERE e.amount > 500;
+\end{lstlisting}
+\textbf{Output E:} Paste output here.
+
+\subsection*{Query F: Show expenses related to groceries}
+\begin{lstlisting}[language=SQL]
+SELECT r.name, e.description, e.amount
+FROM roommates r
+JOIN expenses e ON r.id = e.payer_id
+WHERE e.description LIKE '%Groceries%';
+\end{lstlisting}
+\textbf{Output F:} Paste output here.
+
+\subsection*{Query G: Count expense entries per roommate}
+\begin{lstlisting}[language=SQL]
+SELECT r.name, COUNT(e.id) AS number_of_purchases
+FROM roommates r
+JOIN expenses e ON r.id = e.payer_id
+GROUP BY r.name;
+\end{lstlisting}
+\textbf{Output G:} Paste output here.
+
+\subsection*{Query H: Show the highest single expense}
+\begin{lstlisting}[language=SQL]
+SELECT r.name, e.description, e.amount
+FROM roommates r
+JOIN expenses e ON r.id = e.payer_id
+ORDER BY e.amount DESC
+LIMIT 1;
+\end{lstlisting}
+\textbf{Output H:} Paste output here.
+
+\end{document}

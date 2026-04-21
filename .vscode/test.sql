@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS TableName (
+    id INT AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    Salary INT DEFAULT 0,
+    fk_id INT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (fk_id) REFERENCES OtherTable(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE VIEW ViewName AS
+SELECT column1, column2
+FROM TableName
+WHERE condition;
